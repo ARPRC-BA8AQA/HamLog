@@ -6,15 +6,15 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?logo=windows&logoColor=white)]()
 [![Version](https://img.shields.io/badge/Version-Alpha%201-orange)]()
 
-> **一款由 HAM 为 HAM 打造的开源业余无线电台日志管理系统**
+> **一款为 HAM 打造的开源业余无线电台日志管理系统**
 
 ---
 
 ## 📖 简介
 
-HamLog 是一款面向业余无线电爱好者（HAM）开发的本地电子日志管理软件，使用 **Python + PyQt6 + SQLite** 构建，遵循 **GPL-3.0** 开源协议。
+HamLog 是一款面向业余无线电爱好者（HAM）开发的本地电子日志管理软件，使用 **Python + PyQt6 + SQLite3** 构建，遵循 **GPL-3.0** 开源协议。
 
-无论你是刚入门的爱好者还是资深火腿，HamLog 都能帮助你高效管理 QSO 日志、追踪 QSL 卡片收发状态，并支持多种数据导出格式。
+无论你是刚入门的爱好者还是资深火腿，HamLog 都能帮助你高效管理 QSO 日志、追踪 QSL 卡片收发状态。
 
 ---
 
@@ -76,9 +76,11 @@ pyinstaller --onefile --windowed "HAMLOG GUI.py"
 
 ```
 HamLog/
-├── HAMLOG GUI.py          # 主程序（PyQt6 GUI）
-├── AutoDeal.py            # 后端模块（数据库、校验、设置管理）
-├── Log.db                 # 本地 SQLite 数据库（运行时生成）
+├── programs            #源码文件夹
+  ├── version              #对应版本文件夹
+    ├── HAMLOG GUI.py          # 主程序（PyQt6 GUI）
+    ├── AutoDeal.py            # 后端模块（数据库、校验、设置管理）
+    ├── Log.db                 # 本地 SQLite 数据库（运行时生成）
 ├── screenshots/           # 界面截图
 ├── LICENSE                # GPL-3.0 许可证
 └── README.md              # 本文件
@@ -126,9 +128,8 @@ HamLog 使用 **SQLite** 本地数据库，默认存储路径：
 ### 如何贡献
 
 1. **Fork** 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
+2. 个性化更改
+3. 提交更改并推送至Dev分支
 5. 打开 **Pull Request**
 
 ### 提交 Issue
@@ -148,8 +149,8 @@ Copyright (C) 2026  BA8AQA, BG5JQN 及所有贡献者
 本程序是自由软件：你可以再发布本软件和/或修改本软件，
 只要你遵守 GNU 通用公共许可证（GPL）第 3 版或（按你的决定）任何以后版本。
 
-本程序是希望它能有用而发布的，但没有任何担保；甚至没有适销性或
-特定用途适用性的隐含担保。详情请参阅 GNU 通用公共许可证。
+本程序是希望它能有用而发布的，但没有任何担保或
+特定用途适用性的隐含担保；甚至没有适销性。详情请参阅 GNU 通用公共许可证。
 ```
 
 ---
@@ -170,7 +171,7 @@ Copyright (C) 2026  BA8AQA, BG5JQN 及所有贡献者
 | 平台 | 链接 |
 |------|------|
 | GitHub | [ARPRC-BA8AQA/HamLog](https://github.com/ARPRC-BA8AQA/HamLog) |
-| Bilibili | [@BA8AQA](https://space.bilibili.com/1297822096) |
+| Bilibili | [@C盘研究所-中国_BA8AQA](https://space.bilibili.com/1297822096?) |
 
 ---
 

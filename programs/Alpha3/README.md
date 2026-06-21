@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.7+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/PyQt6-6.0+-41CD52?logo=qt&logoColor=white)](https://www.qt.io/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20x64-0078D6?logo=windows&logoColor=white)]()
-[![Version](https://img.shields.io/badge/Version-Alpha%201-orange)]()
+
 
 > **一款为 HAM 打造的开源业余无线电台日志管理系统**
 

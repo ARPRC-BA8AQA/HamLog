@@ -80,6 +80,10 @@ HamLog/
   ├── version              #对应版本文件夹
     ├── HAMLOG GUI.py          # 主程序（PyQt6 GUI）
     ├── AutoDeal.py            # 后端模块（数据库、校验、设置管理）
+    ├── ADIF.py			# ADIF 导出和 LoTW 上传支持模块
+    ├── LoTW_Upload_Dialog.py		# LoTW 上传对话框
+    ├── ADIF_Export_Dialog.py		# ADIF 导出对话框
+    ├── QRZ_Lookup_Dialog.py  	# QRZ.com 呼号查询模块
     ├── Log.db                 # 本地 SQLite 数据库（运行时生成）
 ├── screenshots/           # 界面截图
 ├── LICENSE                # GPL-3.0 许可证

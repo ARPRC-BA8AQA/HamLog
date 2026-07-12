@@ -1,4 +1,4 @@
-version=R100.0.1
+version=R1.0.0
 exe_url=https://github.com/ARPRC-BA8AQA/HamLog/releases/download/R1.0.2/HamLog%20R1.0.2%20WIN%20X64.exe
-changelog_doc_url=https://gitee.com/ARPRC-BA8AQA/HamLog/raw/main/changelog_R100.0.1.docx
+changelog_doc_url=https://gitee.com/c-disk-research-institute/HamLog/raw/main/changelog_R100.0.1.docx
 force_update=0

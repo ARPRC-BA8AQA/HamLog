@@ -22,7 +22,7 @@ body:
     attributes:
       label: Steps to Reproduce
       description: Steps to reproduce the behavior.
-      placeholder: |
+      
         
     validations:
       required: true

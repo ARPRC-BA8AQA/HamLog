@@ -1,5 +1,5 @@
-name: [English]Feature Request
-description: Suggest an idea or improvement
+name: "[English]Feature Request"
+description: "Suggest an idea or improvement"
 title: "[Feature] "
 labels: ["enhancement"]
 body:
@@ -70,5 +70,5 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I have searched existing Features to ensure this didn't exist in the newest version.
+        - label: I have searched existing Features to ensure this did not exist in the newest version.
           required: true

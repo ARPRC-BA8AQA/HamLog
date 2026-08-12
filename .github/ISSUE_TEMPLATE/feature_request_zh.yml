@@ -1,0 +1,74 @@
+name: [中文]功能需求
+description: 提出功能建议
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        有好的想法？欢迎提出！请详细描述你的功能需求。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 功能描述
+      description: 清晰简洁地描述你想要的功能。
+      placeholder: 描述功能...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题背景
+      description: 这个功能需求是否与某个问题相关？请描述。
+      placeholder: 我经常遇到的问题是...
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 期望方案
+      description: 描述你希望看到的解决方案。
+      placeholder: 描述你期望的实现方式...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+      description: 你是否考虑过其他替代方案？
+      placeholder: 描述替代方案...
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 示意图 / 截图
+      description: 如有必要，请添加示意图或截图以帮助说明。
+      placeholder: 在此粘贴图片或描述...
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本号
+      description: 你当前使用的版本。
+      placeholder: 例如 v1.0.0
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: 操作系统
+      description: 你正在使用的操作系统。
+      options:
+        - Windows 10/11
+        - macOS
+        - Linux
+        - 其他
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 确认清单
+      options:
+        - label: 我已检查过最新版本，确认最新版本没有此功能。
+          required: true

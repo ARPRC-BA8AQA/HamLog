@@ -1,1 +1,62 @@
-注意此分支为重构beta版本分支 后续将会pull进主分支 本分支不保证任何稳定性与安全性!
+# HamLog
+
+> ⚠️ **本分支(Dev)为重构 Beta 分支,正在向 R2.0.0 前后端分离 Web 版重构,后续将合并进主分支。**
+>
+> **本分支不保证任何稳定性与安全性!** 接口、数据结构、目录布局、配置项均可能随重构频繁变更,请勿用于生产环境。如需稳定版本,请使用 [main 分支](https://github.com/ARPRC-BA8AQA/HamLog/tree/main) 或 [Release_1.0.0](https://github.com/ARPRC-BA8AQA/HamLog/releases/tag/Release_1.0.0)。
+
+---
+
+## 项目简介
+
+HamLog 是面向业余无线电爱好者的通联日志管理系统。R2.0.0 版本将原桌面单机程序重构为 **前后端分离的 Web 应用**:
+
+- **后端**:Flask,提供 RESTful API(统一 POST + 标准 JSON + 状态码)
+- **前端**:`front/` 目录,支持 HTML / CSS / JS / PY / PHP 等网页文件
+- **可选 JWT 认证**:关闭认证时默认不降权
+- **插件系统**:插件中心 + 源管理 + 评级系统 + 沙箱隔离
+- **QSL 卡片设计器**:类 PPT 可视化设计 + 智能填充 + 私有/公共格式导出
+- **安全加固**:CORS / CSRF / SQL 参数化查询 / 可选 AES-256 加密
+- **统一日志**:单文件记录,可配置等级,崩溃日志必保
+- **授时同步**:自动提权连接标准授时服务器
+
+## 重要文档
+
+本分支的完整重构文档位于 [`docs/`](./docs) 目录:
+
+| 文档 | 说明 |
+|------|------|
+| 📘 [项目文档](./docs/PROJECT.md) | 功能、架构、认证模型、安全策略、插件、QSL 设计器、快速开始 |
+| 📗 [技术文档](./docs/TECHNICAL.md) | 分层架构、接口规范、数据结构、日志、授时、插件引擎、QSL 引擎、迁移约束 |
+| 📙 [项目结构](./docs/STRUCTURE.md) | 顶层/后端/前端/插件/data/logs/config 完整目录布局 |
+| 📕 [API 接口文档](./docs/API.md) | 统一 POST + 标准 JSON 响应,60+ 接口,状态码规范,速查表 |
+| 📓 [插件开发规范](./docs/PLUGIN_DEV.md) | 权限模型、沙箱、语法审核、API、评级系统、发布流程 |
+| 📒 [QSL 格式规范](./docs/QSL_FORMAT.md) | `.hamqsl` 私有格式、版本兼容、数据绑定、导出规范 |
+
+## 分支说明
+
+| 分支 | 状态 | 用途 |
+|------|------|------|
+| `main` | ✅ 稳定 | 生产发布分支 |
+| `Dev` | ⚠️ 不稳定 | R2.0.0 Web 重构开发分支(当前分支) |
+| `Public` | — | 公共镜像分支 |
+| `docs/refactor-r2` | 📄 文档 | 重构文档工作分支 |
+
+## 当前重构进度
+
+- [x] 重构文档体系(项目 / 技术 / 结构 / API / 插件 / QSL 格式)
+- [x] QRZ.com 爬虫参考实现([qrz_scraper.py](./qrz_scraper.py))
+- [ ] 后端骨架代码(`backend/core/` + `backend/api/`)
+- [ ] 前端基础框架(`front/`)
+- [ ] 插件引擎与插件中心
+- [ ] QSL 卡片设计器
+- [ ] 数据库迁移与业务模块
+- [ ] 测试与部署
+
+## 协议
+
+详见 [LICENSE](./LICENSE)。
+
+## 反馈
+
+- 提交 Issue:[github.com/ARPRC-BA8AQA/HamLog/issues](https://github.com/ARPRC-BA8AQA/HamLog/issues)
+- 贡献代码:请基于 `Dev` 分支提交 Pull Request

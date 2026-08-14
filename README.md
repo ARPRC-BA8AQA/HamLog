@@ -56,6 +56,34 @@ HamLog 是面向业余无线电爱好者的通联日志管理系统。R2.0.0 版
 
 详见 [LICENSE](./LICENSE)。
 
+## Windows 快速开始
+
+要求 Windows 10/11 和 Python 3.9 或更高版本。双击 `start_windows.bat` 会自动创建 `.venv`、安装依赖并启动服务；也可以在 PowerShell 中运行：
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\start_windows.ps1
+```
+
+启动后打开 `http://127.0.0.1:5000`。
+
+## 敏感配置
+
+Windows 生产环境请通过环境变量设置 AES-256 密钥，不要把密钥写入仓库或配置文件。PowerShell 当前会话：
+
+```powershell
+$env:HAMLOG_AES_KEY = python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+持久写入当前 Windows 用户环境变量：
+
+```powershell
+$key = python -c "import secrets; print(secrets.token_hex(32))"
+[Environment]::SetEnvironmentVariable("HAMLOG_AES_KEY", $key, "User")
+```
+
+设置后需要重新启动 HamLog。`HAMLOG_AES_KEY` 支持 64 位十六进制字符串，也支持长度为 32 字节的原始字符串。也可以使用 `HAMLOG_AES_KEY_B64` 配置 32 字节密钥的 URL-safe Base64 值。未配置时仅为开发环境生成本地 `data/secret.key`。
+
 ## 反馈
 
 - 提交 Issue:[github.com/ARPRC-BA8AQA/HamLog/issues](https://github.com/ARPRC-BA8AQA/HamLog/issues)

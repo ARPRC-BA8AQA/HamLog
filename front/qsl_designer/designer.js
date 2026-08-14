@@ -1,0 +1,6 @@
+const canvas = document.querySelector('#canvas'); const ctx = canvas.getContext('2d'); let elements = [];
+function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); elements.forEach(element => { if (element.type === 'rect') { ctx.strokeStyle = '#263746'; ctx.strokeRect(element.x, element.y, element.w, element.h); } else { ctx.fillStyle = '#18232d'; ctx.font = '20px sans-serif'; ctx.fillText(element.content, element.x, element.y + 20); } }); }
+document.querySelectorAll('[data-type]').forEach(button => button.onclick = () => { elements.push({id: crypto.randomUUID(), type: button.dataset.type, x: 40 + elements.length * 12, y: 40 + elements.length * 12, w: 160, h: 50, content: '呼号 {log.callsign}'}); draw(); });
+document.querySelector('#clear').onclick = () => { elements = []; draw(); };
+document.querySelector('#save').onclick = async () => { const content = {schema_version: '1.0', format: 'hamlog-qsl', canvas: {width: 148, height: 105, unit: 'mm'}, background: {type: 'color', color: '#fff'}, elements, assets: {}}; const response = await fetch('/api/qsl/save', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: document.querySelector('#name').value, content})}); const result = await response.json(); alert(result.msg); };
+draw();

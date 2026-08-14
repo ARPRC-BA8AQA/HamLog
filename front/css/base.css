@@ -1,0 +1,15 @@
+:root { font-family: system-ui, sans-serif; color: #1f2933; background: #f4f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: #15202b; color: white; }
+nav { display: flex; gap: 8px; }
+button { border: 1px solid #c8d0d8; border-radius: 4px; padding: 8px 12px; background: white; cursor: pointer; }
+.topbar button { background: transparent; color: white; border-color: #607080; }
+main { max-width: 1180px; margin: 24px auto; padding: 0 16px; }
+.toolbar, form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
+input, select { min-height: 36px; padding: 7px 9px; border: 1px solid #b8c2cc; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th, td { padding: 10px; border-bottom: 1px solid #e2e7eb; text-align: left; }
+.panel { padding: 18px; background: white; border: 1px solid #dce2e7; border-radius: 6px; }
+.muted { color: #66737f; }
+@media (max-width: 650px) { .topbar { align-items: flex-start; gap: 12px; flex-direction: column; } nav { flex-wrap: wrap; } th:nth-child(n+4), td:nth-child(n+4) { display: none; } }

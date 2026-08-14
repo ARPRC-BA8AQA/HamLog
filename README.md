@@ -82,7 +82,7 @@ $key = python -c "import secrets; print(secrets.token_hex(32))"
 [Environment]::SetEnvironmentVariable("HAMLOG_AES_KEY", $key, "User")
 ```
 
-设置后需要重新启动 HamLog。`HAMLOG_AES_KEY` 支持 64 位十六进制字符串，也支持长度为 32 字节的原始字符串。也可以使用 `HAMLOG_AES_KEY_B64` 配置 32 字节密钥的 URL-safe Base64 值。未配置时仅为开发环境生成本地 `data/secret.key`。
+设置后需要重新启动 HamLog。`HAMLOG_AES_KEY` 支持 64 位十六进制字符串，也支持长度为 32 字节的原始字符串。也可以使用 `HAMLOG_AES_KEY_B64` 配置 32 字节密钥的 URL-safe Base64 值。未配置环境变量时 AES 功能拒绝开启，主密钥不会写入本地文件。
 
 ## 反馈
 

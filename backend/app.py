@@ -32,7 +32,7 @@ def create_app(test_config=None):
     from backend.api.qrz_api import bp as qrz_bp
     from backend.api.plugin_api import bp as plugin_bp
     from backend.api.intertime_api import bp as intertime_bp
-    app.config["PLUGIN_DIR"] = str(ROOT / "plugins")
+    app.config.setdefault("PLUGIN_DIR", str(ROOT / "plugins"))
     for blueprint in (log_bp, settings_bp, qsl_bp, system_bp, auth_bp, adif_bp, qrz_bp, plugin_bp, intertime_bp): app.register_blueprint(blueprint)
     @app.before_request
     def csrf_guard():
@@ -49,6 +49,12 @@ def create_app(test_config=None):
     def not_found(_): return fail(404, "资源不存在")
     @app.errorhandler(400)
     def bad_request(_): return fail(400, "请求格式错误")
+    @app.errorhandler(405)
+    def method_not_allowed(_): return fail(405, "仅支持文档规定的 POST 请求")
+    @app.errorhandler(500)
+    def internal_error(error):
+        app.logger.exception("Unhandled request error", exc_info=error)
+        return fail(500, "服务器内部错误")
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def frontend(path):

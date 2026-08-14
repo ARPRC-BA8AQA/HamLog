@@ -11,6 +11,6 @@ if not exist ".venv\Scripts\python.exe" (
   .venv\Scripts\python.exe -m pip install -r requirements.txt
 )
 if not defined HAMLOG_AES_KEY (
-  echo Warning: HAMLOG_AES_KEY is not set. A development key may be stored in data\secret.key.
+  echo Warning: HAMLOG_AES_KEY is not set. AES encryption cannot be enabled.
 )
 .venv\Scripts\python.exe run.py

@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from flask import Blueprint, request, send_file
 from io import BytesIO
-from backend.core.database import get_db, content_json
+from backend.core.database import get_db
 from backend.core.response import ok, fail
 from backend.services.qsl_design_service import normalize, import_content, content_json
 

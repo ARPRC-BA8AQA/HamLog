@@ -1,4 +1,5 @@
 import platform
+import os
 import sys
 from flask import Blueprint, current_app, request
 from backend.core.response import ok, fail
@@ -19,11 +20,12 @@ def sync_status(): return ok({"last_sync": None, "offset_ms": None, "auto_elevat
 @bp.post("/aes_status")
 def aes_status():
     config = current_app.config["HAMLOG_CONFIG"].setdefault("security", {})
-    return ok({"enabled": bool(config.get("aes_enabled", False)), "has_key": (current_app.config["DATA_DIR"] + "/secret.key") and __import__("pathlib").Path(current_app.config["DATA_DIR"], "secret.key").exists()})
+    return ok({"enabled": bool(config.get("aes_enabled", False)), "has_key": bool(os.environ.get("HAMLOG_AES_KEY") or os.environ.get("HAMLOG_AES_KEY_B64"))})
 
 @bp.post("/aes_enable")
 def aes_enable():
-    get_crypto(current_app._get_current_object())
+    try: get_crypto(current_app._get_current_object())
+    except ValueError as exc: return fail(503, str(exc))
     current_app.config["HAMLOG_CONFIG"].setdefault("security", {})["aes_enabled"] = True
     return ok({"enabled": True, "migrated_fields": 0})
 

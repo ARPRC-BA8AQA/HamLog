@@ -1,8 +1,8 @@
 import base64
 import os
-import logging
 from pathlib import Path
 
+from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
@@ -30,24 +30,7 @@ class Crypto:
             if len(key) != 32:
                 raise ValueError("HAMLOG_AES_KEY must be 32 bytes or 64 hex characters")
             return key
-        if self.key_path.exists():
-            key = self.key_path.read_bytes()
-            if len(key) != 32:
-                raise ValueError("AES key must be exactly 32 bytes")
-            return key
-        logging.getLogger("hamlog").warning("HAMLOG_AES_KEY is not set; generating a local development key at %s", self.key_path)
-        key = AESGCM.generate_key(bit_length=256)
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        fd = os.open(self.key_path, flags, 0o600)
-        try:
-            os.write(fd, key)
-        finally:
-            os.close(fd)
-        try:
-            os.chmod(self.key_path, 0o600)
-        except OSError:
-            pass
-        return key
+        raise ValueError("HAMLOG_AES_KEY or HAMLOG_AES_KEY_B64 must be configured")
 
     def encrypt(self, plaintext):
         if not isinstance(plaintext, str):
@@ -61,7 +44,7 @@ class Crypto:
             raw = base64.urlsafe_b64decode(token.encode("ascii"))
             plaintext = AESGCM(self.key).decrypt(raw[:12], raw[12:], None)
             return plaintext.decode("utf-8")
-        except (ValueError, TypeError, UnicodeDecodeError) as exc:
+        except (ValueError, TypeError, UnicodeDecodeError, InvalidTag) as exc:
             raise ValueError("invalid encrypted value") from exc
 
 

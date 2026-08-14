@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+installer/.build-venv/
+installer/build/
+installer/dist/
 config.yaml
 data/
 logs/

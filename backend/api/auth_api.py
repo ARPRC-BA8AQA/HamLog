@@ -45,13 +45,15 @@ def logout():
 def csrf():
     token = issue_csrf()
     response, status = ok({"csrf_token": token})
-    response.set_cookie("hamlog_csrf", token, httponly=False, samesite="Lax", secure=not current_app.config.get("TESTING", False))
+    response.set_cookie("hamlog_csrf", token, httponly=False, samesite="Lax", secure=request.is_secure)
     return response, status
 
 @bp.post("/status")
 def status():
     token = (request.headers.get("Authorization") or "").removeprefix("Bearer "); info = decode_token(token) if token else None
-    return ok({"auth_enabled": current_app.config["HAMLOG_CONFIG"]["auth"].get("enabled", False), "logged_in": bool(info), "role": info.get("role") if info else None, "username": info.get("sub") if info else None})
+    auth_enabled = current_app.config["HAMLOG_CONFIG"]["auth"].get("enabled", False)
+    setup_required = bool(auth_enabled and get_db().execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0)
+    return ok({"auth_enabled": auth_enabled, "setup_required": setup_required, "logged_in": bool(info), "role": info.get("role") if info else None, "username": info.get("sub") if info else None})
 
 @bp.post("/user/list")
 @require_role("admin")
@@ -83,11 +85,16 @@ def user_create():
 @require_role("admin")
 def user_update():
     data = request.get_json(silent=True) or {}; user_id = data.get("id"); fields = [] ; values = []
+    if "role" in data and data.get("role") not in {"admin", "user"}: return fail(400, "role 必须是 admin 或 user")
+    if "password" in data and (not isinstance(data.get("password"), str) or len(data["password"]) < 8): return fail(400, "密码至少 8 位")
+    db = get_db(); current = db.execute("SELECT role FROM users WHERE id=?", (user_id,)).fetchone()
+    if not current: return fail(404, "用户不存在")
+    if data.get("role") == "user" and current["role"] == "admin" and db.execute("SELECT COUNT(*) FROM users WHERE role='admin'").fetchone()[0] <= 1: return fail(409, "不能移除最后一个管理员")
     if data.get("role") in {"admin", "user"}: fields.append("role=?"); values.append(data["role"])
-    if isinstance(data.get("password"), str) and len(data["password"]) >= 8: fields.append("password_hash=?"); values.append(_hash(data["password"]))
+    if "password" in data: fields.append("password_hash=?"); values.append(_hash(data["password"]))
     if not fields: return fail(400, "没有可更新字段")
-    db = get_db(); cursor = db.execute(f"UPDATE users SET {','.join(fields)} WHERE id=?", values + [user_id]); db.commit()
-    return ok({"id": user_id}, "用户更新成功") if cursor.rowcount else fail(404, "用户不存在")
+    cursor = db.execute(f"UPDATE users SET {','.join(fields)} WHERE id=?", values + [user_id]); db.commit()
+    return ok({"id": user_id}, "用户更新成功")
 
 @bp.post("/user/delete")
 @require_role("admin")

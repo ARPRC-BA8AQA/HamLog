@@ -3,13 +3,78 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HamLog</title>
+  <meta name="color-scheme" content="light dark">
+  <title>HamLog | 电台日志</title>
   <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
-  <header class="topbar"><strong>HamLog</strong><nav><button data-view="logs">QSO 日志</button><button data-view="settings">设置</button><button data-view="qsl">QSL 卡片</button></nav></header>
-  <main id="app"></main>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button mobile-menu" id="mobile-menu" aria-label="打开导航" title="打开导航">☰</button>
+      <a class="brand" href="#/dashboard" aria-label="HamLog 首页"><span class="brand-mark">H</span><span>HamLog</span></a>
+      <div class="topbar-context" id="topbar-context">电台工作台</div>
+      <div class="topbar-actions">
+        <span class="connection-dot" id="connection-dot" title="连接状态"></span>
+        <span class="user-status" id="user-status">检查登录状态...</span>
+        <button class="button button-quiet" id="auth-action">登录</button>
+      </div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-scroll">
+          <p class="nav-label">工作台</p>
+          <nav class="nav-group" aria-label="工作台">
+            <a href="#/dashboard" data-route="dashboard"><span class="nav-icon">▦</span>概览</a>
+            <a href="#/logs" data-route="logs"><span class="nav-icon">≋</span>QSO 日志</a>
+            <a href="/qsl_designer/designer.html" data-route="qsl"><span class="nav-icon">□</span>QSL 设计器</a>
+          </nav>
+          <p class="nav-label">工具</p>
+          <nav class="nav-group" aria-label="工具">
+            <a href="#/qrz" data-route="qrz"><span class="nav-icon">⌕</span>QRZ 查询</a>
+            <a href="#/adif" data-route="adif"><span class="nav-icon">⇩</span>ADIF 导出</a>
+            <a href="#/lotw" data-route="lotw"><span class="nav-icon">⇧</span>LoTW 上传</a>
+          </nav>
+          <p class="nav-label">系统</p>
+          <nav class="nav-group" aria-label="系统">
+            <a href="#/network" data-route="network"><span class="nav-icon">⌁</span>网络监测</a>
+            <a href="#/plugins" data-route="plugins"><span class="nav-icon">⊞</span>插件中心</a>
+            <a href="#/settings" data-route="settings"><span class="nav-icon">⚙</span>本台设置</a>
+            <a href="#/system" data-route="system"><span class="nav-icon">●</span>系统与更新</a>
+          </nav>
+        </div>
+        <footer class="sidebar-footer">
+          <span>HamLog Web</span><span class="muted">Release 2.0.0</span>
+        </footer>
+      </aside>
+      <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+      <main class="main-content" id="app" tabindex="-1"></main>
+    </div>
+  </div>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <dialog class="dialog" id="auth-dialog">
+    <form method="dialog" class="dialog-card" id="login-form">
+      <button class="dialog-close icon-button" id="login-close" type="button" aria-label="关闭">×</button>
+      <p class="eyebrow">账户</p>
+      <h2 id="auth-dialog-title">登录 HamLog</h2>
+      <p class="muted" id="auth-dialog-description">认证开启后，受保护的日志与设置会使用当前账户。</p>
+      <label>用户名<input name="username" autocomplete="username" required></label>
+      <label>密码<input name="password" type="password" autocomplete="current-password" required></label>
+      <p class="form-error" id="login-error"></p>
+      <div class="dialog-actions"><button class="button button-secondary" type="button" id="login-cancel">取消</button><button class="button button-primary" type="submit" id="auth-submit">登录</button></div>
+    </form>
+  </dialog>
   <script src="/js/core/api.js"></script>
+  <script src="/js/core/store.js"></script>
+  <script src="/js/core/utils.js"></script>
+  <script src="/js/components/toast.js"></script>
+  <script src="/js/pages/logs.js"></script>
+  <script src="/js/pages/settings.js"></script>
+  <script src="/js/pages/qrz.js"></script>
+  <script src="/js/pages/adif.js"></script>
+  <script src="/js/pages/lotw.js"></script>
+  <script src="/js/pages/intertime.js"></script>
+  <script src="/js/pages/plugins.js"></script>
+  <script src="/js/pages/system.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

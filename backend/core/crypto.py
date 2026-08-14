@@ -19,14 +19,17 @@ class Crypto:
         configured_b64 = os.environ.get("HAMLOG_AES_KEY_B64")
         if configured_b64:
             try:
-                key = base64.urlsafe_b64decode(configured_b64.encode("ascii"))
+                key = base64.b64decode(configured_b64.encode("ascii"), altchars=b"-_", validate=True)
             except (ValueError, UnicodeEncodeError) as exc:
                 raise ValueError("HAMLOG_AES_KEY_B64 is not valid base64") from exc
             if len(key) != 32:
                 raise ValueError("HAMLOG_AES_KEY_B64 must decode to 32 bytes")
             return key
         if configured:
-            key = bytes.fromhex(configured) if len(configured) == 64 else configured.encode("utf-8")
+            try:
+                key = bytes.fromhex(configured) if len(configured) == 64 else configured.encode("utf-8")
+            except ValueError as exc:
+                raise ValueError("HAMLOG_AES_KEY must be 32 bytes or 64 hex characters") from exc
             if len(key) != 32:
                 raise ValueError("HAMLOG_AES_KEY must be 32 bytes or 64 hex characters")
             return key

@@ -1,1 +1,72 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QSL Designer</title><link rel="stylesheet" href="designer.css"></head><body><header><a href="/">返回 HamLog</a><strong>QSL 卡片设计器</strong><button id="save">保存</button></header><main><aside><label>项目名称<input id="name" value="未命名卡片"></label><button data-type="text">添加文字</button><button data-type="rect">添加矩形</button><button id="clear">清空画布</button></aside><section><canvas id="canvas" width="740" height="525"></canvas></section></main><script src="designer.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>HamLog | QSL 设计器</title>
+  <link rel="stylesheet" href="designer.css">
+</head>
+<body>
+  <header class="designer-topbar">
+    <a class="back-link" href="/">← HamLog</a>
+    <div class="designer-title"><span class="brand-mark">H</span><div><strong>QSL 设计器</strong><span id="save-status">未保存</span></div></div>
+    <div class="designer-actions">
+      <button class="button button-secondary" id="load-project">打开</button>
+      <button class="button button-secondary" id="save-project">保存</button>
+      <button class="button button-primary" id="export-menu">导出</button>
+    </div>
+  </header>
+  <main class="designer-layout">
+    <aside class="left-panel">
+      <section class="tool-section">
+        <div class="section-heading"><h2>元素</h2><span class="muted">添加到画布</span></div>
+        <div class="element-tools">
+          <button data-add="select"><span>⌁</span>选择</button><button data-add="text"><span>T</span>文字</button><button data-add="rect"><span>□</span>矩形</button><button data-add="circle"><span>○</span>圆形</button><button data-add="line"><span>╱</span>线条</button><button data-add="image"><span>▧</span>图片</button><button data-add="qrcode"><span>▦</span>二维码</button>
+        </div>
+        <input type="file" id="image-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+      </section>
+      <section class="tool-section">
+        <div class="section-heading"><h2>画布</h2><span class="muted">尺寸与输出</span></div>
+        <div class="compact-grid"><label>宽度<input type="number" id="canvas-width" min="1" max="10000" step="1"></label><label>高度<input type="number" id="canvas-height" min="1" max="10000" step="1"></label><label>DPI<input type="number" id="canvas-dpi" min="72" max="1200" step="1"></label><label>单位<select id="canvas-unit"><option value="mm">mm</option><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></label><label>背景<input type="color" id="background-color"></label></div>
+        <div class="inline-buttons"><button class="button button-secondary" id="background-image">选择背景图</button><button class="button button-quiet-light" id="clear-background">清除背景图</button></div>
+        <input type="file" id="background-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+      </section>
+      <section class="tool-section">
+        <div class="section-heading"><h2>绑定数据</h2><span class="muted">当前元素</span></div>
+        <select id="binding-field"><option value="">不绑定</option></select>
+        <button class="button button-secondary full-width" id="apply-binding">应用绑定</button>
+        <button class="button button-quiet-light full-width" id="preview-binding">预览填充</button>
+      </section>
+      <section class="tool-section tool-section-bottom">
+        <div class="section-heading"><h2>项目</h2><span class="muted">工程文件</span></div>
+        <label>项目名称<input id="project-name" value="标准 QSL 卡片"></label>
+        <button class="button button-secondary full-width" id="import-project">导入 .hamqsl</button>
+        <input type="file" id="project-file" accept=".hamqsl,application/json" hidden>
+      </section>
+    </aside>
+    <section class="canvas-workspace">
+      <div class="canvas-toolbar">
+        <div class="toolbar-group"><button class="icon-button" id="undo" title="撤销">↶</button><button class="icon-button" id="redo" title="重做">↷</button></div>
+        <div class="toolbar-group"><button class="icon-button" id="send-back" title="下移图层">↓</button><button class="icon-button" id="bring-front" title="上移图层">↑</button><button class="icon-button" id="duplicate" title="复制元素">⧉</button><button class="icon-button danger-icon" id="delete-element" title="删除元素">⌫</button></div>
+        <div class="toolbar-spacer"></div><span id="selection-label" class="muted">未选择元素</span><span class="zoom-label">100%</span>
+      </div>
+      <div class="canvas-scroll"><div class="canvas-stage"><canvas id="canvas" width="1480" height="1050" aria-label="QSL 卡片画布"></canvas></div></div>
+      <div class="canvas-footer"><span>QSL 工程画布</span><span id="canvas-size-label">148 × 105 mm</span></div>
+    </section>
+    <aside class="right-panel">
+      <section class="inspector-section"><div class="section-heading"><h2>图层</h2><span id="layer-count" class="muted">0 个元素</span></div><div id="layers" class="layers"></div></section>
+      <section class="inspector-section" id="inspector"><div class="section-heading"><h2>属性</h2><span class="muted">选择元素后编辑</span></div><div class="empty-inspector">从画布或图层列表选择元素。</div></section>
+    </aside>
+  </main>
+  <div class="export-popover" id="export-popover" hidden>
+    <button id="export-png">导出 PNG 图片</button><button id="export-print">打印 / 保存 PDF</button><button id="export-private">下载 .hamqsl 工程</button>
+  </div>
+  <dialog id="projects-dialog" class="projects-dialog"><div class="dialog-card"><button class="icon-button close-dialog" id="close-projects" aria-label="关闭">×</button><p class="eyebrow">Saved projects</p><h2>打开 QSL 工程</h2><div id="project-list" class="project-list"><div class="loading">加载项目...</div></div></div></dialog>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <script src="/js/core/api.js"></script>
+  <script src="/js/core/utils.js"></script>
+  <script src="/js/components/toast.js"></script>
+  <script src="designer.js"></script>
+</body>
+</html>

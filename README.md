@@ -45,12 +45,12 @@ HamLog 是面向业余无线电爱好者的通联日志管理系统。R2.0.0 版
 
 - [x] 重构文档体系(项目 / 技术 / 结构 / API / 插件 / QSL 格式)
 - [x] QRZ.com 爬虫参考实现([qrz_scraper.py](./qrz_scraper.py))
-- [ ] 后端骨架代码(`backend/core/` + `backend/api/`)
-- [ ] 前端基础框架(`front/`)
-- [ ] 插件引擎与插件中心
-- [ ] QSL 卡片设计器
-- [ ] 数据库迁移与业务模块
-- [ ] 测试与部署
+- [x] Flask 后端、核心业务与文档 API
+- [x] 原生 Web 前端与认证状态管理
+- [x] 插件引擎、权限沙箱与插件中心
+- [x] QSL 卡片设计器及 PNG/PDF/私有格式导出
+- [x] SQLite 数据迁移、日志、备份、QRZ、ADIF 与 LoTW
+- [x] 自动化测试与 Windows 打包脚本
 
 ## 协议
 

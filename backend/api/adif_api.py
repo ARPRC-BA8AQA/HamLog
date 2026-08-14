@@ -1,24 +1,54 @@
+import io
 import uuid
-from pathlib import Path
-from flask import Blueprint, current_app, request, send_file
+
+from flask import Blueprint, request, send_file
+
 from backend.core.database import get_db
-from backend.core.response import ok, fail
+from backend.core.response import fail, ok
+from backend.services.adif_exporter import ADIFExporter
+
 
 bp = Blueprint("adif", __name__, url_prefix="/api/adif")
 exports = {}
 
+
 @bp.post("/export")
 def export_adif():
-    data = request.get_json(silent=True) or {}; rows = get_db().execute("SELECT * FROM log ORDER BY id").fetchall(); lines = ["<ADIF_VER:5>3.1.0 <EOH>"]
-    for row in rows:
-        fields = {"CALL": row["Callsign"], "FREQ": row["Freq"], "MODE": row["Mode"], "RST_SENT": row["Rst_self"], "RST_RCVD": row["Rst_side"], "QTH": row["QTH"], "COMMENT": row["Remarks"]}
-        lines.append(" ".join(f"<{key}:{len(str(value or ''))}>{value or ''}" for key, value in fields.items()) + " <EOR>")
-    token = "exp_" + uuid.uuid4().hex; exports[token] = "\n".join(lines).encode(); return ok({"token": token, "total": len(rows), "exported": len(rows), "skipped": 0, "errors": []})
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return fail(400, "请求体必须是 JSON 对象")
+    rows = get_db().execute("SELECT * FROM log ORDER BY id").fetchall()
+    try:
+        result = ADIFExporter().export(
+            rows,
+            date_from=data.get("date_from"),
+            date_to=data.get("date_to"),
+            band=data.get("band"),
+            mode=data.get("mode"),
+            station_callsign=data.get("station_callsign"),
+        )
+    except ValueError as exc:
+        return fail(400, str(exc))
+    token = "exp_" + uuid.uuid4().hex
+    exports[token] = result.content
+    return ok({
+        "token": token,
+        "total": result.total,
+        "exported": result.exported,
+        "skipped": result.skipped,
+        "errors": result.errors,
+    })
+
 
 @bp.post("/download")
 def download():
     token = (request.get_json(silent=True) or {}).get("token")
-    if token not in exports: return fail(404, "导出文件不存在或已过期")
-    path = Path(current_app.config["DATA_DIR"]) / (token + ".adi")
-    path.write_bytes(exports.pop(token))
-    return send_file(path, as_attachment=True, download_name="hamlog.adi", mimetype="application/octet-stream")
+    content = exports.pop(token, None)
+    if content is None:
+        return fail(404, "导出文件不存在或已过期")
+    return send_file(
+        io.BytesIO(content),
+        as_attachment=True,
+        download_name="hamlog.adi",
+        mimetype="application/octet-stream",
+    )

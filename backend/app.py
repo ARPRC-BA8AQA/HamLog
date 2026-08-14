@@ -1,7 +1,8 @@
 from pathlib import Path
+import time
 from flask import Flask, request
 from flask_cors import CORS
-from backend.config import ROOT, load_config
+from backend.config import RESOURCE_ROOT, ROOT, load_config
 from backend.core.database import close_db, init_db
 from backend.core.logger import configure_logging
 from backend.core.response import fail
@@ -9,19 +10,29 @@ from backend.core.security import validate_csrf
 from backend.core.decorators import authenticate_request
 
 def create_app(test_config=None):
-    app = Flask(__name__, static_folder="../front", static_url_path="")
-    if test_config and "server" not in test_config:
-        config = load_config()
+    app = Flask(__name__, static_folder=str(RESOURCE_ROOT / "front"), static_url_path="")
+    config = test_config.get("HAMLOG_CONFIG") if test_config and isinstance(test_config.get("HAMLOG_CONFIG"), dict) else load_config()
+    server = config.get("server", {})
+    app.config.update({"HOST": server.get("host", "127.0.0.1"), "PORT": server.get("port", 5000), "DEBUG": server.get("debug", False), "DATA_DIR": str(ROOT / "data"), "DB_PATH": str(ROOT / "data" / "Log.db"), "HAMLOG_CONFIG": config, "CONFIG_PATH": str(ROOT / "config.yaml")})
+    if test_config:
         app.config.update(test_config)
-        app.config.setdefault("DATA_DIR", str(ROOT / "data"))
-        app.config.setdefault("DB_PATH", str(ROOT / "data" / "Log.db"))
-        app.config.setdefault("HAMLOG_CONFIG", config)
-    else:
-        config = test_config or load_config()
-        app.config.update({"HOST": config["server"]["host"], "PORT": config["server"]["port"], "DEBUG": config["server"].get("debug", False), "DATA_DIR": str(ROOT / "data"), "DB_PATH": str(ROOT / "data" / "Log.db"), "HAMLOG_CONFIG": config})
+        if app.config.get("TESTING") and "CONFIG_PATH" not in test_config:
+            app.config["CONFIG_PATH"] = None
     app.config.setdefault("JSON_AS_ASCII", False)
+    app.config.setdefault("RESOURCE_DIR", str(RESOURCE_ROOT))
     app.secret_key = config["auth"].get("jwt_secret", "")
-    configure_logging(ROOT, config["logging"].get("level", "INFO")); init_db(app); app.teardown_appcontext(close_db)
+    init_db(app)
+    logger = configure_logging(
+        Path(app.config["DATA_DIR"]).parent,
+        config["logging"].get("level", "INFO"),
+        app.config["DB_PATH"],
+        config["logging"].get("keep_days", 30),
+    )
+    app.logger.handlers = list(logger.handlers)
+    app.logger.setLevel(logger.level)
+    app.logger.propagate = False
+    app.teardown_appcontext(close_db)
+    app.extensions["started_at"] = time.monotonic()
     CORS(app, resources={r"/api/*": {"origins": config["security"].get("cors_origins", "*")}})
     from backend.api.log_api import bp as log_bp
     from backend.api.settings_api import bp as settings_bp
@@ -32,19 +43,25 @@ def create_app(test_config=None):
     from backend.api.qrz_api import bp as qrz_bp
     from backend.api.plugin_api import bp as plugin_bp
     from backend.api.intertime_api import bp as intertime_bp
+    from backend.api.lotw_api import bp as lotw_bp
+    from backend.api.update_api import bp as update_bp
     app.config.setdefault("PLUGIN_DIR", str(ROOT / "plugins"))
-    for blueprint in (log_bp, settings_bp, qsl_bp, system_bp, auth_bp, adif_bp, qrz_bp, plugin_bp, intertime_bp): app.register_blueprint(blueprint)
+    Path(app.config["PLUGIN_DIR"]).mkdir(parents=True, exist_ok=True)
+    for blueprint in (log_bp, settings_bp, qsl_bp, system_bp, auth_bp, adif_bp, qrz_bp, plugin_bp, intertime_bp, lotw_bp, update_bp): app.register_blueprint(blueprint)
     @app.before_request
     def csrf_guard():
         if not request.path.startswith("/api/"):
             return None
-        if request.endpoint and request.endpoint.startswith("auth."):
+        if request.method != "POST":
+            return fail(405, "仅支持文档规定的 POST 请求")
+        if request.endpoint in {"auth.csrf", "auth.login", "auth.refresh", "auth.status"}:
             return None
+        if request.endpoint and request.endpoint.startswith("auth."):
+            return validate_csrf()
         authentication_error = authenticate_request()
         if authentication_error:
             return authentication_error
-        if request.method == "POST":
-            return validate_csrf()
+        return validate_csrf()
     @app.errorhandler(404)
     def not_found(_): return fail(404, "资源不存在")
     @app.errorhandler(400)

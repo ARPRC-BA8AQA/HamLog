@@ -4,6 +4,7 @@ import hmac
 import json
 import secrets
 import time
+import sqlite3
 from flask import current_app
 
 
@@ -44,6 +45,9 @@ def decode_token(token, expected_type="access"):
             return None
         if payload.get("jti") in current_app.extensions.setdefault("revoked_tokens", set()):
             return None
+        with sqlite3.connect(current_app.config["DB_PATH"]) as db:
+            if db.execute("SELECT 1 FROM revoked_tokens WHERE jti=? AND expires_at>?", (payload.get("jti"), int(time.time()))).fetchone():
+                return None
         return payload
     except (ValueError, TypeError, KeyError, json.JSONDecodeError, UnicodeDecodeError):
         return None
@@ -53,3 +57,6 @@ def revoke_token(token):
     payload = decode_token(token, expected_type="access") or decode_token(token, expected_type="refresh")
     if payload:
         current_app.extensions.setdefault("revoked_tokens", set()).add(payload["jti"])
+        with sqlite3.connect(current_app.config["DB_PATH"]) as db:
+            db.execute("INSERT OR REPLACE INTO revoked_tokens(jti,expires_at) VALUES(?,?)", (payload["jti"], int(payload["exp"])))
+            db.execute("DELETE FROM revoked_tokens WHERE expires_at <= ?", (int(time.time()),))

@@ -9,6 +9,8 @@ SAFE_ENDPOINTS = {
     "settings.get_all", "settings.get", "qsl.list", "qsl.load", "qsl.data_fields",
     "system.info", "system.db_status", "system.sync_status", "plugin.installed", "plugin.info",
     "intertime.get", "intertime.test",
+    "system.log_query", "system.log_stats", "lotw.find_tqsl", "lotw.list_certs", "lotw.progress",
+    "update.check", "update.progress",
 }
 
 

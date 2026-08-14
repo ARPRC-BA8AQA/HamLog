@@ -1,3 +1,7 @@
+from multiprocessing import freeze_support
+
+freeze_support()
+
 from backend.app import create_app
 
 app = create_app()
